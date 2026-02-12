@@ -52,7 +52,9 @@ describe('Database Sync Script', () => {
   });
 
   it('should have unique constraint on Winners.year', async () => {
-    const tableInfo = await sequelize.getQueryInterface().describeTable('Winners');
-    expect(tableInfo.year.unique).to.be.true;
+    const [indexes] = await sequelize.query(
+      "SHOW INDEX FROM Winners WHERE Column_name = 'year' AND Non_unique = 0"
+    );
+    expect(indexes.length).to.be.greaterThan(0);
   });
 });

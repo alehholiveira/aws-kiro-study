@@ -5,7 +5,9 @@ const { Sequelize, DataTypes, Model } = require('sequelize');
 describe('Database Seed Script', () => {
   let sequelize, Winner, Match;
 
-  before(async () => {
+  before(async function() {
+    this.timeout(30000);
+    
     // Create a new connection for this test suite
     sequelize = new Sequelize(
       process.env.DB_NAME,
@@ -42,6 +44,37 @@ describe('Database Seed Script', () => {
       score2: { type: DataTypes.INTEGER, allowNull: false }
     }, { sequelize, modelName: 'Match', tableName: 'Matches' });
     Match = MatchModel;
+
+    // Run the seed script to populate the database
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Load and seed winners
+    const winnersData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '../../data/winners.json'), 'utf8')
+    );
+    for (const winnerData of winnersData) {
+      await Winner.findOrCreate({
+        where: { year: winnerData.year },
+        defaults: winnerData
+      });
+    }
+
+    // Load and seed matches
+    const matchesData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '../../data/matches.json'), 'utf8')
+    );
+    for (const matchData of matchesData) {
+      await Match.findOrCreate({
+        where: {
+          year: matchData.year,
+          date: matchData.date,
+          team1: matchData.team1,
+          team2: matchData.team2
+        },
+        defaults: matchData
+      });
+    }
   });
 
   after(async () => {

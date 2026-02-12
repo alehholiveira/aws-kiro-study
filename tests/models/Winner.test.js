@@ -7,10 +7,7 @@ describe('Winner Model', () => {
     await sequelize.sync({ force: true });
   });
 
-  after(async () => {
-    // Clean up after tests
-    await sequelize.close();
-  });
+  // Don't close connection here - let test runner handle it
 
   beforeEach(async () => {
     // Clear Winners table before each test

@@ -14,9 +14,7 @@ describe('MatchService', () => {
     await Match.destroy({ where: {}, truncate: true });
   });
 
-  after(async () => {
-    await sequelize.close();
-  });
+  // Don't close connection here - let test runner handle it
 
   describe('getMatchesBetweenTeams', () => {
     it('should return matches between two teams', async () => {
